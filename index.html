@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>AI Assessment Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{--p:#6366f1;--p2:#818cf8;--bg:#0f172a;--b2:#1e293b;--b3:#334155;--bd:#475569;--t:#f8fafc;--t2:#94a3b8;--s:#10b981;--d:#ef4444}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;padding:2rem}
+        .container{max-width:900px;margin:0 auto}
+        h1{font-size:2rem;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.5rem}
+        h1 span{background:var(--p);padding:0.2rem 0.6rem;border-radius:8px;font-size:1rem}
+        .subtitle{color:var(--t2);margin-bottom:2rem}
+        .card{background:var(--b2);border:1px solid var(--bd);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
+        .section-title{font-size:1.1rem;font-weight:600;margin-bottom:1rem;color:var(--p2)}
+        .form-group{margin-bottom:1rem}
+        label{display:block;font-size:0.85rem;color:var(--t2);margin-bottom:0.4rem}
+        input,select,textarea{width:100%;padding:0.7rem;background:var(--bg);border:1px solid var(--bd);border-radius:8px;color:var(--t);font-size:0.9rem;font-family:inherit}
+        input:focus,select:focus,textarea:focus{outline:none;border-color:var(--p)}
+        textarea{min-height:80px;resize:vertical}
+        .btn{padding:0.7rem 1.5rem;border-radius:8px;border:0;cursor:pointer;font-weight:600;font-size:0.9rem;transition:all 0.2s}
+        .btn-primary{background:var(--p);color:#fff}
+        .btn-primary:hover{background:var(--p2)}
+        .btn-secondary{background:var(--b3);color:var(--t)}
+        .checkbox-group{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.5rem}
+        .checkbox-item{display:flex;align-items:center;gap:0.4rem;padding:0.4rem 0.8rem;background:var(--bg);border:1px solid var(--bd);border-radius:100px;cursor:pointer;font-size:0.85rem}
+        .checkbox-item:hover{border-color:var(--p)}
+        .checkbox-item input{display:none}
+        .checkbox-item.checked{background:rgba(99,102,241,0.2);border-color:var(--p)}
+        .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+        .grid-3{grid-template-columns:repeat(3,1fr)}
+        .hidden{display:none}
+        .results{animation:fadeIn 0.5s}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        .tool-card{background:var(--b3);border-radius:10px;padding:1rem;margin-bottom:0.8rem}
+        .tool-card h4{color:var(--p2);margin-bottom:0.3rem;font-size:0.95rem}
+        .tool-card p{font-size:0.8rem;color:var(--t2);margin-bottom:0.5rem}
+        .tool-card .price{font-size:0.75rem;color:var(--s)}
+        .tool-card .saves{font-size:0.75rem;color:#fbbf24}
+        .pain-point{background:rgba(239,68,68,0.1);border-left:3px solid var(--d);padding:0.8rem;margin-bottom:0.5rem;border-radius:0 8px 8px 0}
+        .pain-point-title{font-weight:600;color:var(--d);margin-bottom:0.3rem}
+        .pain-point-desc{font-size:0.85rem;color:var(--t2)}
+        .score-card{text-align:center;padding:1.5rem;background:linear-gradient(135deg,var(--p),#8b5cf6);border-radius:12px}
+        .score-card .value{font-size:3rem;font-weight:700}
+        .score-card .label{font-size:0.85rem;opacity:0.8}
+        .actions{display:flex;gap:1rem;margin-top:1.5rem}
+        .tab-nav{display:flex;gap:0.3rem;margin-bottom:1rem;border-bottom:1px solid var(--bd);padding-bottom:0.5rem}
+        .tab-btn{padding:0.5rem 1rem;background:none;border:none;color:var(--t2);cursor:pointer;font-size:0.85rem;border-radius:6px 6px 0 0}
+        .tab-btn.active{background:var(--b3);color:var(--t)}
+        .tab-content{display:none}
+        .tab-content.active{display:block}
+        .preview{background:#fff;color:#000;padding:2rem;border-radius:8px;min-height:400px}
+        .preview h2{color:#000;border-bottom:2px solid #6366f1;padding-bottom:0.5rem;margin-bottom:1rem}
+        .preview h3{color:#333;margin:1.5rem 0 0.5rem;font-size:1.1rem}
+        .preview ul{margin-left:1.5rem;color:#444}
+        .preview li{margin-bottom:0.3rem}
+        .preview .meta{color:#666;font-size:0.85rem;margin-bottom:2rem}
+        .preview .pain{background:#fee2e2;padding:1rem;border-radius:8px;margin:1rem 0}
+        .preview .tool{background:#f1f5f9;padding:1rem;border-radius:8px;margin:0.5rem 0;border-left:3px solid #6366f1}
+        .preview .tool-name{font-weight:600;color:#6366f1}
+        .preview .savings{background:#dcfce7;padding:1rem;border-radius:8px;margin:1rem 0}
+        @media(max-width:600px){.grid-2,.grid-3{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🤖 AI Assessment Tool <span>$999</span></h1>
+    <p class="subtitle">Transform business pain points into AI solutions</p>
+
+    <div id="formView">
+        <div class="card">
+            <div class="section-title">👤 Business Info</div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Business Name</label>
+                    <input type="text" id="bizName" placeholder="Acme Inc">
+                </div>
+                <div class="form-group">
+                    <label>Owner Name</label>
+                    <input type="text" id="ownerName" placeholder="John Smith">
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Industry</label>
+                    <select id="industry">
+                        <option value="">Select...</option>
+                        <option value="construction">Construction/Contracting</option>
+                        <option value="retail">Retail/E-commerce</option>
+                        <option value="service">Professional Services</option>
+                        <option value="restaurant">Restaurant/Food</option>
+                        <option value="healthcare">Healthcare</option>
+                        <option value="realestate">Real Estate</option>
+                        <option value="manufacturing">Manufacturing</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Company Size</label>
+                    <select id="size">
+                        <option value="">Select...</option>
+                        <option value="1">1-5 employees</option>
+                        <option value="2">6-10 employees</option>
+                        <option value="3">11-25 employees</option>
+                        <option value="4">26-50 employees</option>
+                        <option value="5">50+ employees</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="section-title">😫 Biggest Pain Points</div>
+            <p style="color:var(--t2);font-size:0.85rem;margin-bottom:1rem">Select all that apply:</p>
+            <div class="checkbox-group" id="painPoints">
+                <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox" value="time">⏰ Time drain on manual tasks</label>
+                <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox" value="admin">📋 Too much administrative work</label>
+                <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox" value="scheduling">📅 Scheduling/disorganization</label>
+                <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox" value="communication">💬 Communication chaos</label>
+                <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox" value="invoices">🧾 Invoicing/payments slow</label>
+                <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox" value="crm">📊 No CRM/missed follow-ups</label>
+                <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox" value="marketing">📢 Marketing not working</label>
+                <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox" value="hiring">👥 Hiring/recruitment struggle</label>
+                <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox" value="inventory">📦 Inventory management</label>
+                <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox" value="reporting">📈 No good reports/analytics</label>
+                <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox" value="compliance">⚖️ Compliance/paperwork</label>
+                <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox" value="customer">😤 Customer service overload</label>
+            </div>
+            <div class="form-group" style="margin-top:1rem">
+                <label>Describe your biggest bottleneck in your own words:</label>
+                <textarea id="painText" placeholder="The biggest issue is..."></textarea>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="section-title">⏱️ Time Waste Analysis</div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Hours spent on manual tasks per week</label>
+                    <select id="wastedHours">
+                        <option value="5">0-5 hours</option>
+                        <option value="10">5-10 hours</option>
+                        <option value="15">10-15 hours</option>
+                        <option value="20">15-20 hours</option>
+                        <option value="30">20-30 hours</option>
+                        <option value="40">30+ hours</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Current monthly software spend</label>
+                    <select id="softwareSpend">
+                        <option value="0">$0</option>
+                        <option value="50">Under $50</option>
+                        <option value="150">$50-150</option>
+                        <option value="300">$150-300</option>
+                        <option value="500">$300-500</option>
+                        <option value="1000">$500+</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="generateAssessment()" style="width:100%">Generate Assessment Report</button>
+    </div>
+
+    <div id="resultsView" class="hidden">
+        <div class="card">
+            <div class="section-title">📊 Assessment Complete</div>
+            <div class="grid-3" style="margin-bottom:1.5rem">
+                <div class="score-card">
+                    <div class="value" id="scoreHours">0</div>
+                    <div class="label">Hours Saved/Week</div>
+                </div>
+                <div class="score-card" style="background:linear-gradient(135deg,#10b981,#34d399)">
+                    <div class="value" id="scoreRoi">0x</div>
+                    <div class="label">ROI Multiple</div>
+                </div>
+                <div class="score-card" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)">
+                    <div class="value" id="scoreCost">$0</div>
+                    <div class="label">Est. Monthly Cost</div>
+                </div>
+            </div>
+
+            <h4 style="color:var(--d);margin-bottom:1rem">🎯 Identified Pain Points:</h4>
+            <div id="painList"></div>
+
+            <h4 style="color:var(--p2);margin:1.5rem 0 1rem">🛠️ Recommended AI Tools:</h4>
+            <div id="toolList"></div>
+
+            <div class="actions">
+                <button class="btn btn-primary" onclick="showReport()">📄 View Full Report</button>
+                <button class="btn btn-secondary" onclick="resetForm()">← New Assessment</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="reportView" class="hidden">
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('preview')">Preview</button>
+            <button class="tab-btn" onclick="switchTab('json')">JSON Data</button>
+        </div>
+        <div id="tab-preview" class="tab-content active">
+            <div class="preview" id="reportContent"></div>
+        </div>
+        <div id="tab-json" class="tab-content">
+            <pre id="jsonContent" style="background:var(--b3);padding:1rem;border-radius:8px;overflow:auto;font-size:0.8rem"></pre>
+        </div>
+        <div class="actions">
+            <button class="btn btn-secondary" onclick="showResults()">← Back</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const toolDatabase = {
+    time: [
+        {name:'Bardeen',desc:'Automate workflows between apps',cost:0,saves:'5-10 hrs/wk',url:'bardeen.ai'},
+        {name:'Zapier',desc:'Connect 5,000+ apps',cost:20,saves:'3-5 hrs/wk',url:'zapier.com'},
+        {name:'Make.com',desc:'Visual automation',cost:9,saves:'4-6 hrs/wk',url:'make.com'}
+    ],
+    admin: [
+        {name:'Notion AI',desc:'AI-powered notes & docs',cost:10,saves:'5-8 hrs/wk',url:'notion.so'},
+        {name:'ClickUp AI',desc:'Tasks & docs with AI',cost:7,saves:'4-6 hrs/wk',url:'clickup.com'},
+        {name:'Raycast',desc:'Mac/Windows AI launcher',cost:10,saves:'3-5 hrs/wk',url:'raycast.com'}
+    ],
+    scheduling: [
+        {name:'Calendly AI',desc:'Smart scheduling',cost:12,saves:'3-4 hrs/wk',url:'calendly.com'},
+        {name:'Clockwise',desc:'Meeting optimization',cost:8,saves:'4-5 hrs/wk',url:'clockwise.software'},
+        {name:'Reclaim',desc:'AI calendar management',cost:12,saves:'5-7 hrs/wk',url:'reclaim.ai'}
+    ],
+    communication: [
+        {name:'Slack AI',desc:'Smart workplace chat',cost:8,saves:'2-3 hrs/wk',url:'slack.com'},
+        {name:'Loom',desc:'Async video messaging',cost:12,saves:'3-4 hrs/wk',url:'loom.com'},
+        {name:'Otter.ai',desc:'Meeting transcription',cost:10,saves:'3-4 hrs/wk',url:'otter.ai'}
+    ],
+    invoices: [
+        {name:'Stripe',desc:'Payments & invoicing',cost:2.9%,saves:'5-8 hrs/wk',url:'stripe.com'},
+        {name:'Quaderno',desc:'Automated invoicing',cost:19,saves:'4-6 hrs/wk',url:'quaderno.io'},
+        {name:'Wave',desc:'Free invoicing',cost:0,saves:'3-4 hrs/wk',url:'waveapps.com'}
+    ],
+    crm: [
+        {name:'HubSpot',desc:'Free CRM',cost:0,saves:'5-8 hrs/wk',url:'hubspot.com'},
+        {name:'Pipedrive',desc:'Sales CRM AI',cost:15,saves:'4-6 hrs/wk',url:'pipedrive.com'},
+        {name:'Clay',desc:'Enrich & automate CRM',cost:49,saves:'6-8 hrs/wk',url:'clay.com'}
+    ],
+    marketing: [
+        {name:'Copy.ai',desc:'Marketing copy',cost:49,saves:'5-10 hrs/wk',url:'copy.ai'},
+        {name:'Jasper',desc:'AI content marketing',cost:49,saves:'8-12 hrs/wk',url:'jasper.ai'},
+        {name:'Midjourney',desc:'AI imagery',cost:30,saves:'4-6 hrs/wk',url:'midjourney.com'}
+    ],
+    hiring: [
+        {name:'TalentRocket',desc:'Hiring automation',cost:29,saves:'5-8 hrs/wk',url:'talentrocket.com'},
+        {name:'Paradox',desc:'AI recruiter',cost:50,saves:'10-15 hrs/wk',url:'paradox.ai'},
+        {text:'Indeed + AI tools',cost:0,saves:'3-4 hrs/wk'}
+    ],
+    inventory: [
+        {name:'Sortly',desc:'Visual inventory',cost:29,saves:'5-8 hrs/wk',url:'sortly.com'},
+        {name:'inFlow',desc:'Inventory management',cost:89,saves:'6-8 hrs/wk',url:'inflowinventory.com'},
+        {name:'Cin7',desc:'Operations platform',cost:349,saves:'10-15 hrs/wk',url:'cin7.com'}
+    ],
+    reporting: [
+        {name:'Tableau AI',desc:'Data visualization',cost:75,saves:'5-10 hrs/wk',url:'tableau.com'},
+        {name:'Microsoft Copilot',desc:'Excel/Sheets AI',cost:30,saves:'4-6 hrs/wk',url:'copilot.microsoft.com'},
+        {name:'Google Looker',desc:'BI analytics',cost:70,saves:'5-8 hrs/wk',url:'looker.com'}
+    ],
+    compliance: [
+        {name:'Rocket Lawyer',desc:'Legal docs',cost:40,saves:'5-8 hrs/wk',url:'rocketlawyer.com'},
+        {name:'Clio',desc:'Legal practice management',cost:39,saves:'6-8 hrs/wk',url:'clio.com'},
+        {name:'ComplianceQuest',desc:'QMS platform',cost:50,saves:'4-6 hrs/wk',url:'compliancequest.com'}
+    ],
+    customer: [
+        {name:'Intercom',desc:'AI customer chat',cost:74,saves:'10-15 hrs/wk',url:'intercom.com'},
+        {name:'Zendesk',desc:'Customer service AI',cost:20,saves:'8-12 hrs/wk',url:'zendesk.com'},
+        {name:'ManyChat',desc:'Messenger automation',cost:15,saves:'6-8 hrs/wk',url:'manychat.com'}
+    ]
+};
+
+const painLabels = {
+    time:'Time drain on manual tasks',
+    admin:'Too much administrative work',
+    scheduling:'Scheduling/disorganization',
+    communication:'Communication chaos',
+    invoices:'Invoicing/payments slow',
+    crm:'No CRM/missed follow-ups',
+    marketing:'Marketing not working',
+    hiring:'Hiring/recruitment struggle',
+    inventory:'Inventory management issues',
+    reporting:'No good reports/analytics',
+    compliance:'Compliance/paperwork burden',
+    customer:'Customer service overload'
+};
+
+let assessmentData = {};
+
+function toggleCheck(el) {
+    el.classList.toggle('checked');
+    el.querySelector('input').checked = el.classList.contains('checked');
+}
+
+function getSelectedPains() {
+    const pains = [];
+    document.querySelectorAll('#painPoints input:checked').forEach(cb => {
+        pains.push(cb.value);
+    });
+    return pains;
+}
+
+function generateAssessment() {
+    const pains = getSelectedPains();
+    const wastedHours = parseInt(document.getElementById('wastedHours').value) || 5;
+    const softwareSpend = parseInt(document.getElementById('softwareSpend').value) || 50;
+    
+    assessmentData = {
+        bizName: document.getElementById('bizName').value || 'Your Business',
+        ownerName: document.getElementById('ownerName').value || 'Business Owner',
+        industry: document.getElementById('industry').value,
+        size: document.getElementById('size').value,
+        pains: pains,
+        painText: document.getElementById('painText').value,
+        wastedHours: wastedHours,
+        softwareSpend: softwareSpend
+    };
+    
+    // Calculate scores
+    const hoursSaved = Math.round(wastedHours * 0.7);
+    const monthlyCost = Math.max(softwareSpend * 0.3, 20);
+    const roi = Math.round((hoursSaved * 4 * 15) / monthlyCost); // $15/hr value
+    
+    document.getElementById('scoreHours').textContent = hoursSaved;
+    document.getElementById('scoreRoi').textContent = roi + 'x';
+    document.getElementById('scoreCost').textContent = '$' + Math.round(monthlyCost);
+    
+    // Show pain points
+    const painList = document.getElementById('painList');
+    painList.innerHTML = pains.map(p => 
+        '<div class<div class="pain-point-title">'+painLabels[p]+'</div></div>'
+    ).join('');
+   ="pain-point"> if (assessmentData.painText) {
+        painList.innerHTML += '<div class="pain-point"><div class="pain-point-title">Custom Pain:</div><div class="pain-point-desc">'+assessmentData.painText+'</div></div>';
+    }
+    
+    // Get recommended tools
+    const tools = [];
+    pains.forEach(p => {
+        if (toolDatabase[p]) {
+            tools.push(...toolDatabase[p]);
+        }
+    });
+    
+    // Dedupe and limit
+    const uniqueTools = [...new Map(tools.map(t => [t.name || t.text, t])).values()].slice(0, 8);
+    
+    const toolList = document.getElementById('toolList');
+    toolList.innerHTML = uniqueTools.map(t => 
+        '<div class="tool-card">'+
+        '<h4>'+(t.url?'<a href="https://'+t.url+'" target="_blank" style="color:inherit">'+t.name+'</a>':t.text)+'</h4>'+
+        '<p>'+t.desc+'</p>'+
+        '<span class="price">'+t.cost+(typeof t.cost==='number'?'$/mo':' ')+'</span> '+
+        '<span class="saves">★ '+t.saves+'</span>'+
+        '</div>'
+    ).join('');
+    
+    assessmentData.recommendedTools = uniqueTools;
+    assessmentData.hoursSaved = hoursSaved;
+    assessmentData.monthlyCost = monthlyCost;
+    assessmentData.roi = roi;
+    
+    document.getElementById('formView').classList.add('hidden');
+    document.getElementById('resultsView').classList.remove('hidden');
+    document.getElementById('resultsView').classList.add('results');
+}
+
+function showReport() {
+    const d = assessmentData;
+    const today = new Date().toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'});
+    
+    const report = `
+        <h2>🤖 AI Assessment Report</h2>
+        <div class="meta">
+            <strong>${d.bizName}</strong><br>
+            Prepared for: ${d.ownerName}<br>
+            Date: ${today}
+        </div>
+        
+        <h3>Executive Summary</h3>
+        <p>Based on our assessment, your business could save approximately <strong>${d.hoursSaved} hours per week</strong> 
+        by implementing AI-powered automation. At an estimated monthly tool cost of approximately 
+        <strong>$${Math.round(d.monthlyCost)}/month</strong>, this represents an estimated 
+        <strong>${d.roi}x return on investment</strong>.</p>
+        
+        <h3>🎯 Identified Pain Points</h3>
+        <div class="pain">
+            ${d.pains.map(p => '<strong>• ' + painLabels[p] + '</strong><br>').join('')}
+            ${d.painText ? '<br><em>"' + d.painText + '"</em>' : ''}
+        </div>
+        
+        <h3>🛠️ Recommended AI Solutions</h3>
+        ${d.recommendedTools.map(t => `
+            <div class="tool">
+                <div class="tool-name">${t.name || t.text}</div>
+                <div>${t.desc}</div>
+                <div style="font-size:0.85rem;color:#666;margin-top:0.3rem">
+                    Cost: ${t.cost === 0 ? 'Free' : (typeof t.cost === 'number' ? '$' + t.cost + '/mo' : t.cost)} 
+                    | Saves: ${t.saves}
+                </div>
+            </div>
+        `).join('')}
+        
+        <h3>💰 Investment Analysis</h3>
+        <div class="savings">
+            <strong>Weekly Time Savings:</strong> ${d.hoursSaved} hours<br>
+            <strong>Monthly Tool Investment:</strong> ~$${Math.round(d.monthlyCost)}/month<br>
+            <strong>Effective Hourly Value:</strong> $15/hour (time saved)<br>
+            <strong>Monthly Value:</strong> ${d.hoursSaved * 4 * 15} (conservative)<br>
+            <strong>ROI Multiple:</strong> ${d.roi}x
+        </div>
+        
+        <h3>📋 Next Steps</h3>
+        <ol>
+            <li>Review this report and prioritize 2-3 tools that address your biggest pain points</li>
+            <li>Schedule a 30-minute implementation call to walk through setup</li>
+            <li>Start with one tool and expand as you see results</li>
+        </ol>
+        
+        <p style="margin-top:2rem;color:#666;font-size:0.85rem">
+            This assessment was prepared using AI analysis. Results may vary. 
+            Always test free trials before committing.
+        </p>
+    `;
+    
+    document.getElementById('reportContent').innerHTML = report;
+    document.getElementById('jsonContent').textContent = JSON.stringify(d, null, 2);
+    
+    document.getElementById('resultsView').classList.add('hidden');
+    document.getElementById('reportView').classList.remove('hidden');
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('tab-' + tab).classList.add('active');
+}
+
+function showResults() {
+    document.getElementById('reportView').classList.add('hidden');
+    document.getElementById('resultsView').classList.remove('hidden');
+}
+
+function resetForm() {
+    document.getElementById('resultsView').classList.add('hidden');
+    document.getElementById('formView').classList.remove('hidden');
+    document.querySelectorAll('.checkbox-item').forEach(c => c.classList.remove('checked'));
+    document.querySelectorAll('#painPoints input').forEach(i => i.checked = false);
+    document.querySelector('form').reset();
+}
+</script>
+</body>
+</html>
