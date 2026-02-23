@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Book Your AI Assessment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{--p:#6366f1;--p2:#818cf8;--bg:#0f172a;--b2:#1e293b;--b3:#334155;--bd:#475569;--t:#f8fafc;--t2:#94a3b8;--s:#10b981;--d:#ef4444}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem}
+        .card{background:var(--b2);border:1px solid var(--bd);border-radius:16px;padding:2rem;max-width:500px;width:100%}
+        h1{font-size:1.5rem;margin-bottom:0.5rem;text-align:center}
+        .subtitle{color:var(--t2);text-align:center;margin-bottom:2rem;font-size:0.9rem}
+        .price{text-align:center;font-size:2.5rem;font-weight:700;color:var(--s);margin-bottom:2rem}
+        .price span{font-size:1rem;color:var(--t2);font-weight:400}
+        .form-group{margin-bottom:1rem}
+        label{display:block;font-size:0.85rem;color:var(--t2);margin-bottom:0.4rem}
+        input,select,textarea{width:100%;padding:0.8rem;background:var(--bg);border:1px solid var(--bd);border-radius:8px;color:var(--t);font-size:1rem;font-family:inherit}
+        input:focus,select:focus,textarea:focus{outline:none;border-color:var(--p)}
+        .btn{width:100%;padding:1rem;background:var(--p);color:#fff;border:0;border-radius:8px;font-weight:600;font-size:1rem;cursor:pointer;transition:all 0.2s}
+        .btn:hover{background:var(--p2)}
+        .success{text-align:center;display:none}
+        .success h2{color:var(--s);margin-bottom:1rem}
+        .check{font-size:3rem;margin-bottom:1rem}
+    </style>
+</head>
+<body>
+<div class="card">
+    <div id="formView">
+        <h1>🤖 AI Business Assessment</h1>
+        <p class="subtitle">Save 6+ hours every week with AI</p>
+        <div class="price">$999 <span>one-time</span></div>
+        
+        <form id="intakeForm">
+            <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" name="name" required placeholder="John Smith">
+            </div>
+            <div class="form-group">
+                <label>Email *</label>
+                <input type="email" name="email" required placeholder="john@company.com">
+            </div>
+            <div class="form-group">
+                <label>Company Name *</label>
+                <input type="text" name="company" required placeholder="Acme Inc">
+            </div>
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="tel" name="phone" placeholder="+1 555-123-4567">
+            </div>
+            <div class="form-group">
+                <label>Industry</label>
+                <select name="industry">
+                    <option value="">Select...</option>
+                    <option value="construction">Construction</option>
+                    <option value="retail">Retail/E-commerce</option>
+                    <option value="service">Professional Services</option>
+                    <option value="restaurant">Restaurant/Food</option>
+                    <option value="realestate">Real Estate</option>
+                    <option value="healthcare">Healthcare</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Company Size</label>
+                <select name="size">
+                    <option value="">Select...</option>
+                    <option value="1">1-5 employees</option>
+                    <option value="2">6-10 employees</option>
+                    <option value="3">11-25 employees</option>
+                    <option value="4">26-50 employees</option>
+                    <option value="5">50+ employees</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Biggest time drain? *</label>
+                <textarea name="pain" required placeholder="What takes too much of your time?" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label>How did you hear about this?</label>
+                <select name="referral">
+                    <option value="">Select...</option>
+                    <option value="google">Google Search</option>
+                    <option value="linkedin">LinkedIn</option>
+                    <option value="twitter">Twitter/X</option>
+                    <option value="referral">Referral</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <button type="submit" class="btn">Book Assessment →</button>
+        </form>
+    </div>
+    
+    <div id="successView" class="success">
+        <div class="check">✅</div>
+        <h2>You're Booked!</h2>
+        <p>Check your email for confirmation and next steps.</p>
+        <p style="margin-top:1rem;color:var(--t2)">I'll be in touch within 24 hours.</p>
+    </div>
+</div>
+
+<script>
+const leads = JSON.parse(localStorage.getItem('leads') || '[]');
+
+document.getElementById('intakeForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const lead = {
+        id: Date.now(),
+        name: formData.get('name'),
+        email: formData.get('email'),
+        company: formData.get('company'),
+        phone: formData.get('phone'),
+        industry: formData.get('industry'),
+        size: formData.get('size'),
+        pain: formData.get('pain'),
+        referral: formData.get('referral'),
+        status: 'new',
+        created: new Date().toISOString()
+    };
+    
+    leads.push(lead);
+    localStorage.setItem('leads', JSON.stringify(leads));
+    
+    document.getElementById('formView').style.display = 'none';
+    document.getElementById('successView').style.display = 'block';
+    
+    // Also send to console for webhook capture
+    console.log('NEW LEAD:', JSON.stringify(lead));
+});
+</script>
+</body>
+</html>
